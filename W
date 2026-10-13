@@ -1,0 +1,1685 @@
+--// NEXORA | MM2 V7 | ส่วน 1/8 (วางส่วน 1-8 ต่อกันให้ครบ)
+local NX_OK, NX_ERR = pcall(function()
+
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local MarketplaceService = game:GetService("MarketplaceService")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local LOGO = "rbxassetid://119290932517877"
+local DISCORD = "https://discord.gg/Qdaj957G4"
+
+local RED = Color3.fromRGB(255, 70, 85)
+local DARK = Color3.fromRGB(10, 10, 12)
+local PANEL = Color3.fromRGB(20, 18, 22)
+local WHITE = Color3.fromRGB(255, 255, 255)
+local TOPBAR = Color3.fromRGB(48, 10, 16)
+local ROW = Color3.fromRGB(32, 26, 30)
+local BTN = Color3.fromRGB(175, 22, 40)
+local BTN_HOVER = Color3.fromRGB(225, 45, 65)
+local SW_ON = Color3.fromRGB(40, 190, 90)
+local SW_OFF = Color3.fromRGB(80, 80, 88)
+
+local lang = "th"
+local ESP = { roles = false, gun = false, fov = false, lines = false, boxes = false }
+local NX = {}
+
+local TEXT = {
+    th = {
+        home = "หน้าหลัก", esp = "ESP", warp = "วาร์ป", farm = "ฟลิ้ง",
+        murderer = "ฆาตกร", sheriff = "นายอำเภอ", settings = "ตั้งค่า",
+        coinfarm = "ฟาร์ม", event = "EVEN", players = "ผู้เล่น",
+        welcome = "ยินดีต้อนรับสู่ NEXORA ♡",
+        name = "👤 ชื่อตัวละคร", profile = "🖼️ โปรไฟล์ตัวละคร",
+        health = "❤️ เลือด", fps = "⚡ FPS", map = "🗺️ ชื่อแมพ",
+        discord = "💬 ดิสคอร์ด", copy = "คัดลอก", copied = "คัดลอกแล้ว ✓",
+        copyfail = "เลือกลิงก์แล้วคัดลอกเอง",
+        category = "หมวดหมู่ ", addhere = "\n\nเพิ่มฟังก์ชันของเกมตัวเองได้ที่นี่ ✦",
+        language = "ภาษา",
+        espLegend = '<font color="#3CFF5A">● คนธรรมดา</font>   <font color="#FF3030">● ฆาตกร</font>   <font color="#3C8CFF">● นายอำเภอ</font>   <font color="#FFDC00">● ปืน</font>',
+        espRoles = "👁️ ดูบทบาทผู้เล่น",
+        espRolesD = "แสดงสีและชื่อผู้เล่น มองทะลุกำแพง",
+        espGun = "🔫 ESP ปืนที่ตก",
+        espGunD = "เมื่อปืนตกจะเห็นชื่อปืนสีเหลือง มองทะลุได้",
+        espFov = "⭕ FOV",
+        espFovD = "วงกลมสีแดงขนาดใหญ่กลางจอ",
+        espLine = "📏 เส้นหาผู้เล่น",
+        espLineD = "ลากเส้นจากบนจอไปหาผู้เล่นแต่ละคน สีตามบทบาท",
+        espBox = "🟥 กรอบผู้เล่น",
+        espBoxD = "กรอบสี่เหลี่ยมสีตามบทบาท พร้อมหลอดเลือดข้างๆ",
+        wGun = "🔫 วาร์ปไปเก็บปืน",
+        wGunD = "ถ้าเป็นคนธรรมดาและปืนตก จะวาร์ปไปเก็บแล้วกลับที่เดิม",
+        wMurder = "🔪 วาร์ปไปหาฆาตกร",
+        wMurderD = "กดแล้ววาร์ปไปที่ฆาตกรทันที",
+        wSheriff = "🔫 วาร์ปไปหานายอำเภอ",
+        wSheriffD = "กดแล้ววาร์ปไปที่นายอำเภอทันที",
+        wList = "👥 เลือกผู้เล่น",
+        wGo = "🌀 วาร์ปไปหาคนที่เลือก",
+        go = "วาร์ป",
+        noMurder = "ไม่พบฆาตกร", noSheriff = "ไม่พบนายอำเภอ",
+        noSelect = "ยังไม่ได้เลือกผู้เล่น", noChar = "วาร์ปไม่ได้ (ไม่พบตัวละคร)",
+        cfCoin = "🪙 เก็บเหรียญอัตโนมัติ",
+        cfCoinD = "วาร์ปเก็บเหรียญตามแมพ ครบ 40 เหรียญจะลอยขึ้นไปอยู่ข้างบน",
+    },
+    en = {
+        home = "Home", esp = "ESP", warp = "Warp", farm = "Fling",
+        murderer = "Murderer", sheriff = "Sheriff", settings = "Settings",
+        coinfarm = "Farm", event = "EVEN", players = "Players",
+        welcome = "Welcome to NEXORA ♡",
+        name = "👤 Character Name", profile = "🖼️ Character Profile",
+        health = "❤️ Health", fps = "⚡ FPS", map = "🗺️ Map Name",
+        discord = "💬 Discord", copy = "Copy", copied = "Copied ✓",
+        copyfail = "Select the link and copy it",
+        category = "Category: ", addhere = "\n\nAdd your own game features here ✦",
+        language = "Language",
+        espLegend = '<font color="#3CFF5A">● Innocent</font>   <font color="#FF3030">● Murderer</font>   <font color="#3C8CFF">● Sheriff</font>   <font color="#FFDC00">● Gun</font>',
+        espRoles = "👁️ Role ESP",
+        espRolesD = "Shows player color and name through walls",
+        espGun = "🔫 Dropped Gun ESP",
+        espGunD = "Shows the dropped gun name in yellow through walls",
+        espFov = "⭕ FOV",
+        espFovD = "Big red circle in the center of the screen",
+        espLine = "📏 Player Lines",
+        espLineD = "Line from top of screen to each player, colored by role",
+        espBox = "🟥 Player Boxes",
+        espBoxD = "Role-colored box with a health bar beside it",
+        wGun = "🔫 Warp to Gun",
+        wGunD = "As innocent, warps to a dropped gun then returns",
+        wMurder = "🔪 Warp to Murderer",
+        wMurderD = "Press to warp to the murderer",
+        wSheriff = "🔫 Warp to Sheriff",
+        wSheriffD = "Press to warp to the sheriff",
+        wList = "👥 Pick a Player",
+        wGo = "🌀 Warp to Selected",
+        go = "Warp",
+        noMurder = "Murderer not found", noSheriff = "Sheriff not found",
+        noSelect = "No player selected", noChar = "Can't warp (no character)",
+        cfCoin = "🪙 Auto Collect Coins",
+        cfCoinD = "Collects map coins, floats up high after 40",
+    },
+}
+
+local categories = {
+    { key = "home", emoji = "🏠" },
+    { key = "esp", emoji = "👁️" },
+    { key = "warp", emoji = "🌀" },
+    { key = "farm", emoji = "💫" },
+    { key = "murderer", emoji = "🔪" },
+    { key = "sheriff", emoji = "🔫" },
+    { key = "coinfarm", emoji = "💰" },
+    { key = "event", emoji = "🎉" },
+    { key = "players", emoji = "👥" },
+    { key = "settings", emoji = "⚙️" },
+}
+
+local currentTab = 1
+
+for _, n in ipairs({ "NEXORA_MM2", "NEXORA_MM2_ESP", "NEXORA_ERR" }) do
+    local o = playerGui:FindFirstChild(n)
+    if o then o:Destroy() end
+end
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "NEXORA_MM2"
+gui.ResetOnSpawn = false
+gui.IgnoreGuiInset = true
+gui.DisplayOrder = 999
+gui.Parent = playerGui
+
+local function round(obj, radius)
+    local c = Instance.new("UICorner")
+    c.CornerRadius = UDim.new(0, radius)
+    c.Parent = obj
+end
+
+local function stroke(obj, color, thickness)
+    local s = Instance.new("UIStroke")
+    s.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    s.Color = color
+    s.Thickness = thickness or 1
+    s.Parent = obj
+    return s
+end
+
+local function make(class, props, parent)
+    local obj = Instance.new(class)
+    for k, v in pairs(props) do
+        obj[k] = v
+    end
+    obj.Parent = parent
+    return obj
+end
+
+local function tween(obj, duration, props, style)
+    local t = TweenService:Create(
+        obj,
+        TweenInfo.new(duration, style or Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+        props
+    )
+    t:Play()
+    return t
+end
+
+local toastLabel = make("TextLabel", {
+    AnchorPoint = Vector2.new(0.5, 1),
+    Position = UDim2.new(0.5, 0, 1, -52),
+    Size = UDim2.fromOffset(250, 30),
+    BackgroundColor3 = DARK,
+    TextColor3 = WHITE,
+    Font = Enum.Font.GothamBold,
+    TextSize = 12,
+    Visible = false,
+    ZIndex = 50,
+    Text = "",
+}, gui)
+round(toastLabel, 9)
+stroke(toastLabel, RED, 1.5)
+local toastId = 0
+function NX.toast(key)
+    toastId += 1
+    local id = toastId
+    toastLabel.Text = TEXT[lang][key] or key
+    toastLabel.Visible = true
+    task.delay(1.6, function()
+        if id == toastId then toastLabel.Visible = false end
+    end)
+end--// ส่วน 2/8 : หน้าต่างหลัก + แถบข้าง
+local main = make("Frame", {
+    Name = "Main",
+    AnchorPoint = Vector2.new(0.5, 0.5),
+    Position = UDim2.fromScale(0.5, 0.5),
+    Size = UDim2.fromScale(0.78, 0.76),
+    BackgroundColor3 = DARK,
+    BorderSizePixel = 0,
+}, gui)
+round(main, 18)
+stroke(main, RED, 2)
+
+local mainScale = make("UIScale", { Scale = 1 }, main)
+
+local sizeLimit = Instance.new("UISizeConstraint")
+sizeLimit.MinSize = Vector2.new(300, 280)
+sizeLimit.MaxSize = Vector2.new(560, 430)
+sizeLimit.Parent = main
+
+local top = make("Frame", {
+    Name = "TopBar",
+    Size = UDim2.new(1, 0, 0, 48),
+    BackgroundColor3 = TOPBAR,
+    BorderSizePixel = 0,
+}, main)
+round(top, 18)
+
+make("Frame", {
+    Position = UDim2.new(0, 0, 1, -12),
+    Size = UDim2.new(1, 0, 0, 12),
+    BackgroundColor3 = TOPBAR,
+    BorderSizePixel = 0,
+}, top)
+
+make("ImageLabel", {
+    Position = UDim2.new(0, 10, 0, 7),
+    Size = UDim2.fromOffset(34, 34),
+    BackgroundTransparency = 1,
+    Image = LOGO,
+    ScaleType = Enum.ScaleType.Fit,
+}, top)
+
+make("TextLabel", {
+    Position = UDim2.new(0, 51, 0, 0),
+    Size = UDim2.new(0.48, 0, 1, 0),
+    BackgroundTransparency = 1,
+    Text = "NEXORA | MM2",
+    TextColor3 = WHITE,
+    Font = Enum.Font.GothamBold,
+    TextSize = 15,
+    TextXAlignment = Enum.TextXAlignment.Left,
+}, top)
+
+local function isPress(i)
+    return i.UserInputType == Enum.UserInputType.MouseButton1
+        or i.UserInputType == Enum.UserInputType.Touch
+end
+
+local function decorateButton(button)
+    button.MouseEnter:Connect(function()
+        button.BackgroundColor3 = BTN_HOVER
+    end)
+    button.MouseLeave:Connect(function()
+        button.BackgroundColor3 = BTN
+    end)
+    button.InputBegan:Connect(function(i)
+        if isPress(i) then button.BackgroundColor3 = BTN_HOVER end
+    end)
+    button.InputEnded:Connect(function(i)
+        if isPress(i) then button.BackgroundColor3 = BTN end
+    end)
+end
+
+local function cuteButton(props, parent)
+    props.BackgroundColor3 = BTN
+    props.TextColor3 = WHITE
+    props.AutoButtonColor = false
+    props.BorderSizePixel = 0
+    props.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    props.TextStrokeTransparency = 0.45
+    props.Font = props.Font or Enum.Font.GothamBold
+    local b = make("TextButton", props, parent)
+    decorateButton(b)
+    return b
+end
+
+local closeButton = cuteButton({
+    Name = "Close",
+    AnchorPoint = Vector2.new(1, 0.5),
+    Position = UDim2.new(1, -8, 0.5, 0),
+    Size = UDim2.fromOffset(34, 34),
+    Text = "×",
+    TextSize = 22,
+}, top)
+round(closeButton, 9)
+
+local minimizeButton = cuteButton({
+    Name = "Minimize",
+    AnchorPoint = Vector2.new(1, 0.5),
+    Position = UDim2.new(1, -48, 0.5, 0),
+    Size = UDim2.fromOffset(34, 34),
+    Text = "—",
+    TextSize = 18,
+}, top)
+round(minimizeButton, 9)
+
+local sidebar = make("Frame", {
+    Name = "Sidebar",
+    Position = UDim2.new(0, 9, 0, 56),
+    Size = UDim2.new(0, 124, 1, -65),
+    BackgroundColor3 = PANEL,
+    BorderSizePixel = 0,
+}, main)
+round(sidebar, 13)
+
+local tabScroll = make("ScrollingFrame", {
+    Name = "Tabs",
+    Position = UDim2.new(0, 0, 0, 0),
+    Size = UDim2.new(1, 0, 1, -64),
+    BackgroundTransparency = 1,
+    BorderSizePixel = 0,
+    ScrollBarThickness = 3,
+    ScrollBarImageColor3 = BTN,
+    CanvasSize = UDim2.new(0, 0, 0, 0),
+    AutomaticCanvasSize = Enum.AutomaticSize.Y,
+}, sidebar)
+
+make("UIPadding", {
+    PaddingTop = UDim.new(0, 7),
+    PaddingBottom = UDim.new(0, 7),
+    PaddingLeft = UDim.new(0, 6),
+    PaddingRight = UDim.new(0, 6),
+}, tabScroll)
+
+make("UIListLayout", {
+    Padding = UDim.new(0, 6),
+    SortOrder = Enum.SortOrder.LayoutOrder,
+}, tabScroll)
+
+local langLabel = make("TextLabel", {
+    Position = UDim2.new(0, 6, 1, -60),
+    Size = UDim2.new(1, -12, 0, 16),
+    BackgroundTransparency = 1,
+    TextColor3 = WHITE,
+    Font = Enum.Font.GothamBold,
+    TextSize = 11,
+    Text = "",
+}, sidebar)
+
+local thButton = cuteButton({
+    Name = "LangTH",
+    Position = UDim2.new(0, 6, 1, -40),
+    Size = UDim2.new(0.5, -9, 0, 32),
+    Text = "🇹🇭 ไทย",
+    TextSize = 11,
+}, sidebar)
+round(thButton, 9)
+local thStroke = stroke(thButton, WHITE, 2)
+
+local enButton = cuteButton({
+    Name = "LangEN",
+    Position = UDim2.new(0.5, 3, 1, -40),
+    Size = UDim2.new(0.5, -9, 0, 32),
+    Text = "🇬🇧 English",
+    TextSize = 11,
+}, sidebar)
+round(enButton, 9)
+local enStroke = stroke(enButton, WHITE, 2)
+
+local content = make("Frame", {
+    Name = "Content",
+    Position = UDim2.new(0, 141, 0, 56),
+    Size = UDim2.new(1, -150, 1, -65),
+    BackgroundColor3 = PANEL,
+    BorderSizePixel = 0,
+}, main)
+round(content, 13)
+
+local pageTitle = make("TextLabel", {
+    Position = UDim2.new(0, 12, 0, 8),
+    Size = UDim2.new(1, -24, 0, 28),
+    BackgroundTransparency = 1,
+    TextColor3 = RED,
+    Font = Enum.Font.GothamBold,
+    TextSize = 16,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    Text = "",
+}, content)
+
+local pageInfo = make("TextLabel", {
+    Position = UDim2.new(0, 12, 0, 42),
+    Size = UDim2.new(1, -24, 1, -54),
+    BackgroundTransparency = 1,
+    TextColor3 = WHITE,
+    Font = Enum.Font.Gotham,
+    TextSize = 13,
+    TextWrapped = true,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    TextYAlignment = Enum.TextYAlignment.Top,
+    Visible = false,
+    Text = "",
+}, content)
+
+local function makePage(name)
+    local page = make("ScrollingFrame", {
+        Name = name,
+        Position = UDim2.new(0, 8, 0, 40),
+        Size = UDim2.new(1, -16, 1, -48),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        ScrollBarThickness = 3,
+        ScrollBarImageColor3 = BTN,
+        CanvasSize = UDim2.new(0, 0, 0, 0),
+        AutomaticCanvasSize = Enum.AutomaticSize.Y,
+        Visible = false,
+    }, content)
+    make("UIListLayout", {
+        Padding = UDim.new(0, 6),
+        SortOrder = Enum.SortOrder.LayoutOrder,
+    }, page)
+    return page
+end
+
+local home = makePage("HomePage")
+local espPage = makePage("EspPage")
+local warpPage = makePage("WarpPage")
+local farmPage = makePage("FarmPage")
+
+local labelRefs = {}--// ส่วน 3/8 : หน้าหลัก + หมวด ESP
+local copyButton
+
+local function makeToggle(parent, order, labelKey, descKey, onChange)
+    local row = make("Frame", {
+        LayoutOrder = order,
+        Size = UDim2.new(1, -6, 0, 56),
+        BackgroundColor3 = ROW,
+        BorderSizePixel = 0,
+    }, parent)
+    round(row, 10)
+
+    local label = make("TextLabel", {
+        Position = UDim2.new(0, 10, 0, 6),
+        Size = UDim2.new(1, -76, 0, 18),
+        BackgroundTransparency = 1,
+        TextColor3 = RED,
+        Font = Enum.Font.GothamBold,
+        TextSize = 12,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Text = "",
+    }, row)
+    labelRefs[label] = labelKey
+
+    local desc = make("TextLabel", {
+        Position = UDim2.new(0, 10, 0, 25),
+        Size = UDim2.new(1, -76, 0, 28),
+        BackgroundTransparency = 1,
+        TextColor3 = Color3.fromRGB(215, 215, 220),
+        Font = Enum.Font.Gotham,
+        TextSize = 10,
+        TextWrapped = true,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        TextYAlignment = Enum.TextYAlignment.Top,
+        Text = "",
+    }, row)
+    labelRefs[desc] = descKey
+
+    local pill = make("Frame", {
+        AnchorPoint = Vector2.new(1, 0.5),
+        Position = UDim2.new(1, -10, 0.5, 0),
+        Size = UDim2.fromOffset(48, 24),
+        BackgroundColor3 = SW_OFF,
+        BorderSizePixel = 0,
+    }, row)
+    round(pill, 12)
+
+    local knob = make("Frame", {
+        Position = UDim2.new(0, 3, 0.5, -9),
+        Size = UDim2.fromOffset(18, 18),
+        BackgroundColor3 = WHITE,
+        BorderSizePixel = 0,
+    }, pill)
+    round(knob, 9)
+
+    local hit = make("TextButton", {
+        Size = UDim2.fromScale(1, 1),
+        BackgroundTransparency = 1,
+        Text = "",
+        AutoButtonColor = false,
+    }, row)
+
+    local on = false
+    hit.Activated:Connect(function()
+        on = not on
+        tween(pill, 0.12, { BackgroundColor3 = on and SW_ON or SW_OFF })
+        tween(knob, 0.12, {
+            Position = on and UDim2.new(1, -21, 0.5, -9) or UDim2.new(0, 3, 0.5, -9),
+        })
+        onChange(on)
+    end)
+end
+
+do
+    local function makeRow(order, labelKey, height)
+        local row = make("Frame", {
+            LayoutOrder = order,
+            Size = UDim2.new(1, -6, 0, height or 34),
+            BackgroundColor3 = ROW,
+            BorderSizePixel = 0,
+        }, home)
+        round(row, 10)
+
+        local label = make("TextLabel", {
+            Position = UDim2.new(0, 10, 0, 0),
+            Size = UDim2.new(0.44, -10, 1, 0),
+            BackgroundTransparency = 1,
+            TextColor3 = RED,
+            Font = Enum.Font.GothamBold,
+            TextSize = 11,
+            TextWrapped = true,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            Text = "",
+        }, row)
+        labelRefs[label] = labelKey
+
+        local value = make("TextLabel", {
+            Position = UDim2.new(0.44, 0, 0, 0),
+            Size = UDim2.new(0.56, -10, 1, 0),
+            BackgroundTransparency = 1,
+            TextColor3 = WHITE,
+            Font = Enum.Font.Gotham,
+            TextSize = 11,
+            TextWrapped = true,
+            TextXAlignment = Enum.TextXAlignment.Right,
+            Text = "-",
+        }, row)
+        return row, value
+    end
+
+    NX.welcome = make("TextLabel", {
+        LayoutOrder = 0,
+        Size = UDim2.new(1, -6, 0, 22),
+        BackgroundTransparency = 1,
+        TextColor3 = WHITE,
+        Font = Enum.Font.Gotham,
+        TextSize = 12,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Text = "",
+    }, home)
+
+    local _, nameValue = makeRow(1, "name")
+    local profileRow = makeRow(2, "profile", 70)
+    local avatar = make("ImageLabel", {
+        AnchorPoint = Vector2.new(1, 0.5),
+        Position = UDim2.new(1, -10, 0.5, 0),
+        Size = UDim2.fromOffset(54, 54),
+        BackgroundColor3 = DARK,
+        Image = "rbxthumb://type=AvatarHeadShot&id=" .. player.UserId .. "&w=150&h=150",
+    }, profileRow)
+    round(avatar, 12)
+    stroke(avatar, BTN, 2)
+
+    local _, healthValue = makeRow(3, "health")
+    local _, fpsValue = makeRow(4, "fps")
+    local _, mapValue = makeRow(5, "map")
+
+    local discordRow = make("Frame", {
+        LayoutOrder = 6,
+        Size = UDim2.new(1, -6, 0, 76),
+        BackgroundColor3 = ROW,
+        BorderSizePixel = 0,
+    }, home)
+    round(discordRow, 10)
+
+    local discordLabel = make("TextLabel", {
+        Position = UDim2.new(0, 10, 0, 4),
+        Size = UDim2.new(1, -20, 0, 20),
+        BackgroundTransparency = 1,
+        TextColor3 = RED,
+        Font = Enum.Font.GothamBold,
+        TextSize = 11,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Text = "",
+    }, discordRow)
+    labelRefs[discordLabel] = "discord"
+
+    local discordBox = make("TextBox", {
+        Position = UDim2.new(0, 10, 0, 26),
+        Size = UDim2.new(1, -20, 0, 20),
+        BackgroundColor3 = DARK,
+        BorderSizePixel = 0,
+        Text = DISCORD,
+        TextColor3 = WHITE,
+        Font = Enum.Font.Gotham,
+        TextSize = 11,
+        ClearTextOnFocus = false,
+        TextEditable = false,
+    }, discordRow)
+    round(discordBox, 6)
+
+    copyButton = cuteButton({
+        Position = UDim2.new(0, 10, 0, 50),
+        Size = UDim2.new(1, -20, 0, 22),
+        Text = "",
+        TextSize = 11,
+    }, discordRow)
+    round(copyButton, 8)
+
+    copyButton.Activated:Connect(function()
+        local clip = setclipboard or toclipboard
+        local ok = false
+        if clip then ok = pcall(clip, DISCORD) end
+        copyButton.Text = ok and TEXT[lang].copied or TEXT[lang].copyfail
+        task.wait(1.6)
+        copyButton.Text = TEXT[lang].copy
+    end)
+
+    local frames, lastTick = 0, os.clock()
+    RunService.RenderStepped:Connect(function()
+        frames += 1
+        local now = os.clock()
+        if now - lastTick >= 0.5 then
+            fpsValue.Text = tostring(math.floor(frames / (now - lastTick) + 0.5))
+            frames = 0
+            lastTick = now
+        end
+    end)
+
+    task.spawn(function()
+        while gui.Parent do
+            local char = player.Character
+            local hum = char and char:FindFirstChildOfClass("Humanoid")
+            if hum then
+                healthValue.Text = math.floor(hum.Health) .. " / " .. math.floor(hum.MaxHealth)
+            else
+                healthValue.Text = "-"
+            end
+            task.wait(0.3)
+        end
+    end)
+
+    nameValue.Text = player.DisplayName .. " (@" .. player.Name .. ")"
+
+    task.spawn(function()
+        local ok, info = pcall(function()
+            return MarketplaceService:GetProductInfo(game.PlaceId)
+        end)
+        mapValue.Text = (ok and info and info.Name) or game.Name
+    end)
+end
+
+do
+    local legendRow = make("Frame", {
+        LayoutOrder = 1,
+        Size = UDim2.new(1, -6, 0, 34),
+        BackgroundColor3 = ROW,
+        BorderSizePixel = 0,
+    }, espPage)
+    round(legendRow, 10)
+
+    local legendLabel = make("TextLabel", {
+        Position = UDim2.new(0, 10, 0, 0),
+        Size = UDim2.new(1, -20, 1, 0),
+        BackgroundTransparency = 1,
+        RichText = true,
+        TextColor3 = WHITE,
+        Font = Enum.Font.GothamBold,
+        TextSize = 11,
+        TextWrapped = true,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Text = "",
+    }, legendRow)
+    labelRefs[legendLabel] = "espLegend"
+
+    makeToggle(espPage, 2, "espRoles", "espRolesD", function(v) ESP.roles = v end)
+    makeToggle(espPage, 3, "espGun", "espGunD", function(v) ESP.gun = v end)
+    makeToggle(espPage, 4, "espFov", "espFovD", function(v) ESP.fov = v end)
+    makeToggle(espPage, 5, "espLine", "espLineD", function(v) ESP.lines = v end)
+    makeToggle(espPage, 6, "espBox", "espBoxD", function(v) ESP.boxes = v end)
+end--// ส่วน 4/8 : หมวดวาร์ป
+do
+    local function warpTo(plr)
+        local c = player.Character
+        local tc = plr and plr.Character
+        local th = tc and tc:FindFirstChild("HumanoidRootPart")
+        if c and th and c:FindFirstChild("HumanoidRootPart") then
+            c:PivotTo(th.CFrame * CFrame.new(0, 0, 3))
+            return true
+        end
+        return false
+    end
+
+    local function warpToRole(role, missKey)
+        if NX.fetchNow then NX.fetchNow() end
+        for _, plr in ipairs(Players:GetPlayers()) do
+            if plr ~= player and NX.getRole and NX.getRole(plr) == role then
+                if not warpTo(plr) then NX.toast("noChar") end
+                return
+            end
+        end
+        NX.toast(missKey)
+    end
+
+    local function makeAction(order, labelKey, descKey, onClick)
+        local row = make("Frame", {
+            LayoutOrder = order,
+            Size = UDim2.new(1, -6, 0, 56),
+            BackgroundColor3 = ROW,
+            BorderSizePixel = 0,
+        }, warpPage)
+        round(row, 10)
+
+        local label = make("TextLabel", {
+            Position = UDim2.new(0, 10, 0, 6),
+            Size = UDim2.new(1, -86, 0, 18),
+            BackgroundTransparency = 1,
+            TextColor3 = RED,
+            Font = Enum.Font.GothamBold,
+            TextSize = 12,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            Text = "",
+        }, row)
+        labelRefs[label] = labelKey
+
+        local desc = make("TextLabel", {
+            Position = UDim2.new(0, 10, 0, 25),
+            Size = UDim2.new(1, -86, 0, 28),
+            BackgroundTransparency = 1,
+            TextColor3 = Color3.fromRGB(215, 215, 220),
+            Font = Enum.Font.Gotham,
+            TextSize = 10,
+            TextWrapped = true,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            TextYAlignment = Enum.TextYAlignment.Top,
+            Text = "",
+        }, row)
+        labelRefs[desc] = descKey
+
+        local btn = cuteButton({
+            AnchorPoint = Vector2.new(1, 0.5),
+            Position = UDim2.new(1, -8, 0.5, 0),
+            Size = UDim2.fromOffset(62, 36),
+            Text = "",
+            TextSize = 12,
+        }, row)
+        round(btn, 9)
+        labelRefs[btn] = "go"
+        btn.Activated:Connect(onClick)
+    end
+
+    makeToggle(warpPage, 1, "wGun", "wGunD", function(v) NX.warpGun = v end)
+
+    makeAction(2, "wMurder", "wMurderD", function()
+        warpToRole("Murderer", "noMurder")
+    end)
+    makeAction(3, "wSheriff", "wSheriffD", function()
+        warpToRole("Sheriff", "noSheriff")
+    end)
+
+    local listRow = make("Frame", {
+        LayoutOrder = 4,
+        Size = UDim2.new(1, -6, 0, 190),
+        BackgroundColor3 = ROW,
+        BorderSizePixel = 0,
+    }, warpPage)
+    round(listRow, 10)
+
+    local listTitle = make("TextLabel", {
+        Position = UDim2.new(0, 10, 0, 4),
+        Size = UDim2.new(1, -20, 0, 20),
+        BackgroundTransparency = 1,
+        TextColor3 = RED,
+        Font = Enum.Font.GothamBold,
+        TextSize = 12,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Text = "",
+    }, listRow)
+    labelRefs[listTitle] = "wList"
+
+    local list = make("ScrollingFrame", {
+        Position = UDim2.new(0, 6, 0, 28),
+        Size = UDim2.new(1, -12, 1, -34),
+        BackgroundColor3 = DARK,
+        BorderSizePixel = 0,
+        ScrollBarThickness = 3,
+        ScrollBarImageColor3 = BTN,
+        CanvasSize = UDim2.new(0, 0, 0, 0),
+        AutomaticCanvasSize = Enum.AutomaticSize.Y,
+    }, listRow)
+    round(list, 8)
+    make("UIListLayout", {
+        Padding = UDim.new(0, 4),
+        SortOrder = Enum.SortOrder.Name,
+    }, list)
+    make("UIPadding", {
+        PaddingTop = UDim.new(0, 4),
+        PaddingBottom = UDim.new(0, 4),
+        PaddingLeft = UDim.new(0, 4),
+        PaddingRight = UDim.new(0, 4),
+    }, list)
+
+    local selected = nil
+    local entries = {}
+
+    local function refreshSel()
+        for plr, e in pairs(entries) do
+            e.BackgroundColor3 = (plr == selected) and BTN or ROW
+        end
+    end
+
+    local function addEntry(plr)
+        if plr == player or entries[plr] then return end
+        local btn = make("TextButton", {
+            Name = plr.Name:lower(),
+            Size = UDim2.new(1, -4, 0, 36),
+            BackgroundColor3 = ROW,
+            AutoButtonColor = false,
+            BorderSizePixel = 0,
+            Text = "",
+        }, list)
+        round(btn, 8)
+
+        local av = make("ImageLabel", {
+            Position = UDim2.new(0, 5, 0.5, -14),
+            Size = UDim2.fromOffset(28, 28),
+            BackgroundColor3 = DARK,
+            Image = "rbxthumb://type=AvatarHeadShot&id=" .. plr.UserId .. "&w=48&h=48",
+        }, btn)
+        round(av, 14)
+
+        make("TextLabel", {
+            Position = UDim2.new(0, 40, 0, 0),
+            Size = UDim2.new(1, -44, 1, 0),
+            BackgroundTransparency = 1,
+            TextColor3 = WHITE,
+            Font = Enum.Font.Gotham,
+            TextSize = 11,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            TextTruncate = Enum.TextTruncate.AtEnd,
+            Text = plr.DisplayName .. " (@" .. plr.Name .. ")",
+        }, btn)
+
+        btn.Activated:Connect(function()
+            selected = plr
+            refreshSel()
+        end)
+        entries[plr] = btn
+    end
+
+    local function removeEntry(plr)
+        local e = entries[plr]
+        if e then
+            e:Destroy()
+            entries[plr] = nil
+        end
+        if selected == plr then selected = nil end
+        refreshSel()
+    end
+
+    for _, p in ipairs(Players:GetPlayers()) do addEntry(p) end
+    Players.PlayerAdded:Connect(addEntry)
+    Players.PlayerRemoving:Connect(removeEntry)
+
+    local goBtn = cuteButton({
+        LayoutOrder = 5,
+        Size = UDim2.new(1, -6, 0, 40),
+        Text = "",
+        TextSize = 13,
+    }, warpPage)
+    round(goBtn, 10)
+    labelRefs[goBtn] = "wGo"
+    goBtn.Activated:Connect(function()
+        if not selected or not selected.Parent then
+            NX.toast("noSelect")
+            return
+        end
+        if not warpTo(selected) then NX.toast("noChar") end
+    end)
+
+    task.spawn(function()
+        local busy = false
+        while gui.Parent do
+            task.wait(0.4)
+            if NX.warpGun and not busy and NX.getRole and NX.getRole(player) == "Innocent" then
+                local part = NX.gunPart and NX.gunPart()
+                local c = player.Character
+                if part and c and c:FindFirstChild("HumanoidRootPart") then
+                    busy = true
+                    local back = c:GetPivot()
+                    c:PivotTo(part.CFrame)
+                    task.wait(0.4)
+                    c = player.Character
+                    if c and c:FindFirstChild("HumanoidRootPart") then
+                        c:PivotTo(back)
+                    end
+                    task.wait(2)
+                    busy = false
+                end
+            end
+        end
+    end)
+end--// ส่วน 5/8 : ฟาร์มเหรียญ + แท็บ ภาษา เปิด/ปิด ลาก
+do
+    local LIMIT = 40
+    local FARM = { on = false }
+    local collected, floating, lastCont = 0, false, nil
+    local done = {}
+
+    local info = make("Frame", {
+        LayoutOrder = 2,
+        Size = UDim2.new(1, -6, 0, 34),
+        BackgroundColor3 = ROW,
+        BorderSizePixel = 0,
+    }, farmPage)
+    round(info, 10)
+    local countLabel = make("TextLabel", {
+        Position = UDim2.new(0, 10, 0, 0),
+        Size = UDim2.new(1, -20, 1, 0),
+        BackgroundTransparency = 1,
+        TextColor3 = WHITE,
+        Font = Enum.Font.GothamBold,
+        TextSize = 12,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Text = "🪙 0 / " .. LIMIT,
+    }, info)
+
+    local function myParts()
+        local c = player.Character
+        return c, c and c:FindFirstChild("HumanoidRootPart"), c and c:FindFirstChildOfClass("Humanoid")
+    end
+
+    local function release()
+        floating = false
+        local _, hrp = myParts()
+        if hrp then hrp.Anchored = false end
+    end
+
+    local function float()
+        local c, hrp = myParts()
+        if not (c and hrp) then return end
+        floating = true
+        c:PivotTo(hrp.CFrame + Vector3.new(0, 120, 0))
+        hrp.Anchored = true
+    end
+
+    local function coinPart(o)
+        if o:IsA("BasePart") then return o end
+        return o:FindFirstChildWhichIsA("BasePart", true)
+    end
+
+    local function nextCoin(cont, hrp)
+        local best, bd
+        for _, o in ipairs(cont:GetChildren()) do
+            local p = coinPart(o)
+            if p and (done[p] or 0) < 99 then
+                local d = (p.Position - hrp.Position).Magnitude
+                if not bd or d < bd then
+                    best, bd = p, d
+                end
+            end
+        end
+        return best
+    end
+
+    local function step()
+        local c, hrp, hum = myParts()
+        if not (c and hrp and hum and hum.Health > 0) then return end
+
+        local cont = workspace:FindFirstChild("CoinContainer", true)
+        if cont ~= lastCont then
+            lastCont = cont
+            collected = 0
+            done = {}
+            release()
+        end
+        if floating and not hrp.Anchored then floating = false end
+
+        countLabel.Text = "🪙 " .. collected .. " / " .. LIMIT .. (floating and "  ⬆" or "")
+
+        if collected >= LIMIT then
+            if not floating then float() end
+            return
+        end
+        if not cont then return end
+
+        local coin = nextCoin(cont, hrp)
+        if not coin then return end
+
+        c:PivotTo(CFrame.new(coin.Position))
+        if firetouchinterest then
+            pcall(firetouchinterest, hrp, coin, 0)
+            pcall(firetouchinterest, hrp, coin, 1)
+        end
+        task.wait(0.2)
+
+        done[coin] = (done[coin] or 0) + 1
+        if not coin.Parent or coin.Transparency >= 0.99 then
+            collected += 1
+            done[coin] = 99
+        elseif done[coin] >= 3 then
+            done[coin] = 99
+        end
+    end
+
+    makeToggle(farmPage, 1, "cfCoin", "cfCoinD", function(v)
+        FARM.on = v
+        if not v then release() end
+    end)
+
+    task.spawn(function()
+        while gui.Parent do
+            task.wait(0.25)
+            if FARM.on then
+                local ok, err = pcall(step)
+                if not ok then warn("[NXFARM]", err) end
+            end
+        end
+    end)
+end
+
+local tabButtons = {}
+local pages = { home = home, esp = espPage, warp = warpPage, coinfarm = farmPage }
+
+local function applyLanguage()
+    local t = TEXT[lang]
+    for i, cat in ipairs(categories) do
+        tabButtons[i].Text = cat.emoji .. "  " .. t[cat.key]
+    end
+    for label, key in pairs(labelRefs) do
+        label.Text = t[key]
+    end
+    NX.welcome.Text = t.welcome
+    copyButton.Text = t.copy
+    langLabel.Text = "🌐 " .. t.language
+    thStroke.Transparency = lang == "th" and 0 or 1
+    enStroke.Transparency = lang == "en" and 0 or 1
+
+    local cat = categories[currentTab]
+    pageTitle.Text = cat.emoji .. " " .. t[cat.key]
+    if not pages[cat.key] then
+        pageInfo.Text = t.category .. t[cat.key] .. t.addhere
+    end
+end
+
+local function selectTab(i)
+    currentTab = i
+    for j, b in ipairs(tabButtons) do
+        b:FindFirstChildOfClass("UIStroke").Transparency = j == i and 0 or 1
+    end
+    local key = categories[i].key
+    for k, p in pairs(pages) do
+        p.Visible = (k == key)
+    end
+    pageInfo.Visible = not pages[key]
+    applyLanguage()
+end
+
+for i, cat in ipairs(categories) do
+    local button = cuteButton({
+        Name = "Tab_" .. i,
+        LayoutOrder = i,
+        Size = UDim2.new(1, 0, 0, 38),
+        Text = "",
+        TextSize = 12,
+    }, tabScroll)
+    round(button, 10)
+    stroke(button, WHITE, 2).Transparency = 1
+    tabButtons[i] = button
+    button.Activated:Connect(function()
+        selectTab(i)
+    end)
+end
+
+thButton.Activated:Connect(function()
+    lang = "th"
+    applyLanguage()
+end)
+enButton.Activated:Connect(function()
+    lang = "en"
+    applyLanguage()
+end)
+
+selectTab(1)
+
+local floatingLogo = make("ImageButton", {
+    Name = "CatToggle",
+    AnchorPoint = Vector2.new(0, 1),
+    Position = UDim2.new(0, 12, 1, -90),
+    Size = UDim2.fromOffset(58, 58),
+    BackgroundColor3 = DARK,
+    Image = LOGO,
+    ScaleType = Enum.ScaleType.Fit,
+    AutoButtonColor = false,
+}, gui)
+round(floatingLogo, 17)
+stroke(floatingLogo, RED, 2)
+
+local isOpen = false
+local animId = 0
+main.Visible = false
+
+local function setOpen(v)
+    if v == isOpen and main.Visible == v then return end
+    isOpen = v
+    animId += 1
+    local my = animId
+    if v then
+        mainScale.Scale = 0.6
+        main.Visible = true
+        tween(mainScale, 0.25, { Scale = 1 }, Enum.EasingStyle.Back)
+    else
+        local tw = tween(mainScale, 0.16, { Scale = 0.6 })
+        tw.Completed:Connect(function()
+            if animId == my then main.Visible = false end
+        end)
+    end
+end
+
+minimizeButton.Activated:Connect(function() setOpen(false) end)
+closeButton.Activated:Connect(function() setOpen(false) end)
+
+local function makeDraggable(handle, target, flag)
+    local dragging, startIn, startPos = false, nil, nil
+
+    handle.InputBegan:Connect(function(input)
+        if isPress(input) then
+            dragging = true
+            startIn = input.Position
+            startPos = target.Position
+            if flag then flag.moved = false end
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and (
+            input.UserInputType == Enum.UserInputType.MouseMovement
+            or input.UserInputType == Enum.UserInputType.Touch
+        ) then
+            local d = input.Position - startIn
+            if flag and (math.abs(d.X) > 5 or math.abs(d.Y) > 5) then
+                flag.moved = true
+            end
+            if not flag or flag.moved then
+                target.Position = UDim2.new(
+                    startPos.X.Scale, startPos.X.Offset + d.X,
+                    startPos.Y.Scale, startPos.Y.Offset + d.Y
+                )
+            end
+        end
+    end)
+
+    UserInputService.InputEnded:Connect(function(input)
+        if dragging and isPress(input) then
+            dragging = false
+            if flag then
+                task.delay(0.05, function() flag.moved = false end)
+            end
+        end
+    end)
+end
+
+local logoFlag = { moved = false }
+makeDraggable(top, main)
+makeDraggable(floatingLogo, floatingLogo, logoFlag)
+
+floatingLogo.Activated:Connect(function()
+    if logoFlag.moved then return end
+    setOpen(not isOpen)
+end)
+
+setOpen(true)--// ส่วน 6/8 : ENGINE เริ่ม (ห้ามลบ do ปิดที่ส่วน 8)
+do
+    local RepStorage = game:GetService("ReplicatedStorage")
+
+    local playerData, dataSource = {}, "ไม่มี"
+    local pEsp, gEsp, known, roleCache, vis = {}, {}, {}, {}, {}
+    local lastErr = nil
+    local ev, fn
+
+    local COL = {
+        Innocent = Color3.fromRGB(60, 255, 90),
+        Murderer = Color3.fromRGB(255, 40, 40),
+        Sheriff = Color3.fromRGB(60, 140, 255),
+    }
+    local GUN_COL = Color3.fromRGB(255, 220, 0)
+    local ROLE_TXT = {
+        th = { Innocent = "คนธรรมดา", Murderer = "ฆาตกร", Sheriff = "นายอำเภอ" },
+        en = { Innocent = "Innocent", Murderer = "Murderer", Sheriff = "Sheriff" },
+    }
+
+    local function hasTag(inst, tag)
+        local ok, r = pcall(function() return inst:HasTag(tag) end)
+        return ok and r
+    end
+
+    local function setData(d)
+        if type(d) == "table" then
+            playerData = d
+            dataSource = "เกม"
+        end
+    end
+
+    local function findRemote(names, class)
+        for _, d in ipairs(RepStorage:GetDescendants()) do
+            if d:IsA(class) and names[d.Name] then return d end
+        end
+    end
+
+    function NX.fetchNow()
+        if fn then
+            local ok, d = pcall(function() return fn:InvokeServer() end)
+            if ok then setData(d) end
+        end
+    end
+
+    task.spawn(function()
+        for _ = 1, 40 do
+            ev = ev or findRemote({ PlayerDataChanged = true }, "RemoteEvent")
+            fn = fn or findRemote({ GetCurrentPlayerData = true, GetPlayerData = true }, "RemoteFunction")
+            if ev and fn then break end
+            task.wait(0.5)
+        end
+        if ev then ev.OnClientEvent:Connect(setData) end
+        while gui.Parent do
+            if fn and (ESP.roles or ESP.gun or ESP.lines or ESP.boxes or NX.warpGun) then
+                NX.fetchNow()
+            end
+            task.wait(1.5)
+        end
+    end)
+
+    local function roleFromText(r)
+        r = tostring(r or ""):lower()
+        if r:find("murder") then return "Murderer" end
+        if r:find("sheriff") or r:find("hero") then return "Sheriff" end
+        return nil
+    end
+
+    local function toolRole(parent)
+        for _, t in ipairs(parent:GetChildren()) do
+            if t:IsA("Tool") then
+                local n = t.Name:lower()
+                if hasTag(t, "Weapon_Knife") or n:find("knife") then return "Murderer" end
+                if hasTag(t, "Weapon_Gun") or n == "gun" or n:find("revolver") then return "Sheriff" end
+            end
+        end
+        return nil
+    end
+
+    local function getRole(plr)
+        local char = plr.Character
+        local hum = char and char:FindFirstChildOfClass("Humanoid")
+        if not char or not hum or hum.Health <= 0 then return nil end
+        local d = playerData[plr.Name]
+        if type(d) == "table" then
+            if d.Dead == true then return nil end
+            local r = roleFromText(d.Role)
+            if r then return r end
+        end
+        local r = toolRole(char)
+        if not r and plr:FindFirstChild("Backpack") then r = toolRole(plr.Backpack) end
+        return r or "Innocent"
+    end
+    NX.getRole = getRole
+
+    local function distTo(pos)
+        local c = player.Character
+        local hrp = c and c:FindFirstChild("HumanoidRootPart")
+        return hrp and math.floor((hrp.Position - pos).Magnitude) or 0
+    end
+
+    local function makeTag(adornee, parent, w, h, offset)
+        local g = Instance.new("BillboardGui")
+        g.Name = "NX_TAG"
+        g.Adornee = adornee
+        g.AlwaysOnTop = true
+        g.Size = UDim2.fromOffset(w, h)
+        g.StudsOffset = offset
+        g.ResetOnSpawn = false
+        g.Parent = parent
+        local l = Instance.new("TextLabel")
+        l.Size = UDim2.fromScale(1, 1)
+        l.BackgroundTransparency = 1
+        l.Font = Enum.Font.GothamBold
+        l.TextSize = 14
+        l.TextStrokeTransparency = 0.15
+        l.TextStrokeColor3 = Color3.new(0, 0, 0)
+        l.TextWrapped = true
+        l.Text = ""
+        l.Parent = g
+        return g, l
+    end
+
+    local function makeHL(target, color, fillT)
+        local h = Instance.new("Highlight")
+        h.Name = "NX_HL"
+        h.Adornee = target
+        h.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+        h.FillColor = color
+        h.OutlineColor = color
+        h.FillTransparency = fillT
+        h.OutlineTransparency = 0
+        h.Parent = target
+        return h
+    end
+
+    local function clearPlayer(plr)
+        local e = pEsp[plr]
+        if e then
+            pcall(function() e.hl:Destroy() end)
+            pcall(function() e.gui:Destroy() end)
+            pEsp[plr] = nil
+        end
+    end
+
+    local function applyPlayer(plr, role)
+        local char = plr.Character
+        local head = char and char:FindFirstChild("Head")
+        if not (char and head) then
+            clearPlayer(plr)
+            return
+        end
+        local e = pEsp[plr]
+        if e and (e.char ~= char or not e.hl.Parent or not e.gui.Parent) then
+            clearPlayer(plr)
+            e = nil
+        end
+        if not e then
+            local hl = makeHL(char, COL[role], 0.55)
+            local g, l = makeTag(head, head, 170, 40, Vector3.new(0, 2.6, 0))
+            e = { char = char, hl = hl, gui = g, label = l }
+            pEsp[plr] = e
+        end
+        local c = COL[role]
+        e.hl.FillColor = c
+        e.hl.OutlineColor = c
+        e.label.TextColor3 = c
+        e.label.Text = plr.DisplayName .. "\n" .. ROLE_TXT[lang][role] .. " [" .. distTo(head.Position) .. "m]"
+    end
+
+    local function clearAllPlayers()
+        for plr in pairs(pEsp) do clearPlayer(plr) end
+    end--// ส่วน 7/8 : FOV เส้น กรอบ หลอดเลือด (อยู่ใน do เดียวกับส่วน 6)
+    local statusLabel = make("TextLabel", {
+        AnchorPoint = Vector2.new(0, 1),
+        Position = UDim2.new(0, 8, 1, -8),
+        Size = UDim2.fromOffset(330, 34),
+        BackgroundColor3 = DARK,
+        BackgroundTransparency = 0.25,
+        TextColor3 = WHITE,
+        Font = Enum.Font.GothamBold,
+        TextSize = 11,
+        TextWrapped = true,
+        Visible = false,
+        Text = "",
+    }, gui)
+    round(statusLabel, 8)
+
+    local overlay = make("ScreenGui", {
+        Name = "NEXORA_MM2_ESP",
+        ResetOnSpawn = false,
+        IgnoreGuiInset = true,
+        DisplayOrder = 998,
+    }, playerGui)
+    gui.Destroying:Connect(function() overlay:Destroy() end)
+
+    local fov = make("Frame", {
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        Position = UDim2.fromScale(0.5, 0.5),
+        Size = UDim2.fromOffset(320, 320),
+        BackgroundTransparency = 1,
+        Visible = false,
+    }, overlay)
+    round(fov, 1000)
+    stroke(fov, Color3.fromRGB(255, 40, 40), 3)
+
+    local function getVis(plr)
+        local v = vis[plr]
+        if v then return v end
+        local line = make("Frame", {
+            AnchorPoint = Vector2.new(0.5, 0.5),
+            BorderSizePixel = 0,
+            Visible = false,
+        }, overlay)
+        local box = make("Frame", {
+            BackgroundTransparency = 1,
+            BorderSizePixel = 0,
+            Visible = false,
+        }, overlay)
+        local bs = stroke(box, WHITE, 2)
+        local hpBg = make("Frame", {
+            BackgroundColor3 = Color3.fromRGB(20, 20, 20),
+            BorderSizePixel = 0,
+            Visible = false,
+        }, overlay)
+        local hpFill = make("Frame", {
+            AnchorPoint = Vector2.new(0, 1),
+            Position = UDim2.new(0, 0, 1, 0),
+            Size = UDim2.fromScale(1, 1),
+            BackgroundColor3 = COL.Innocent,
+            BorderSizePixel = 0,
+        }, hpBg)
+        v = { line = line, box = box, bs = bs, hpBg = hpBg, hpFill = hpFill }
+        vis[plr] = v
+        return v
+    end
+
+    local function hideVis(v)
+        v.line.Visible = false
+        v.box.Visible = false
+        v.hpBg.Visible = false
+    end
+
+    local function clearVis(plr)
+        local v = vis[plr]
+        if v then
+            v.line:Destroy()
+            v.box:Destroy()
+            v.hpBg:Destroy()
+            vis[plr] = nil
+        end
+    end
+
+    local function drawPlayer(cam, plr, v, origin)
+        local role = roleCache[plr]
+        local char = plr.Character
+        local hrp = char and char:FindFirstChild("HumanoidRootPart")
+        local hum = char and char:FindFirstChildOfClass("Humanoid")
+        if not (role and hrp) then
+            hideVis(v)
+            return
+        end
+
+        local p, onScreen = cam:WorldToViewportPoint(hrp.Position)
+        if not (onScreen and p.Z > 0) then
+            hideVis(v)
+            return
+        end
+
+        local c = COL[role]
+        if ESP.lines then
+            local d = Vector2.new(p.X, p.Y) - origin
+            v.line.BackgroundColor3 = c
+            v.line.Size = UDim2.fromOffset(d.Magnitude, 2)
+            v.line.Position = UDim2.fromOffset(origin.X + d.X / 2, origin.Y + d.Y / 2)
+            v.line.Rotation = math.deg(math.atan2(d.Y, d.X))
+            v.line.Visible = true
+        else
+            v.line.Visible = false
+        end
+
+        if ESP.boxes then
+            local t = cam:WorldToViewportPoint(hrp.Position + Vector3.new(0, 2.8, 0))
+            local b = cam:WorldToViewportPoint(hrp.Position - Vector3.new(0, 3.2, 0))
+            local h = math.abs(b.Y - t.Y)
+            local w = h * 0.55
+            v.box.Position = UDim2.fromOffset(p.X - w / 2, t.Y)
+            v.box.Size = UDim2.fromOffset(w, h)
+            v.bs.Color = c
+            v.box.Visible = true
+
+            local frac = hum and math.clamp(hum.Health / math.max(hum.MaxHealth, 1), 0, 1) or 1
+            v.hpBg.Position = UDim2.fromOffset(p.X - w / 2 - 7, t.Y)
+            v.hpBg.Size = UDim2.fromOffset(4, h)
+            v.hpFill.Size = UDim2.fromScale(1, frac)
+            v.hpFill.BackgroundColor3 = Color3.fromHSV(frac * 0.33, 1, 1)
+            v.hpBg.Visible = true
+        else
+            v.box.Visible = false
+            v.hpBg.Visible = false
+        end
+    end
+
+    local wasVis = false
+    RunService.RenderStepped:Connect(function()
+        local cam = workspace.CurrentCamera
+        if not cam then return end
+        local vp = cam.ViewportSize
+
+        fov.Visible = ESP.fov
+        if ESP.fov then
+            local s = math.min(vp.X, vp.Y) * 0.7
+            fov.Size = UDim2.fromOffset(s, s)
+        end
+
+        if not (ESP.lines or ESP.boxes) then
+            if wasVis then
+                for _, v in pairs(vis) do hideVis(v) end
+                wasVis = false
+            end
+            return
+        end
+        wasVis = true
+
+        local origin = Vector2.new(vp.X / 2, 0)
+        for _, plr in ipairs(Players:GetPlayers()) do
+            if plr ~= player then
+                drawPlayer(cam, plr, getVis(plr), origin)
+            end
+        end
+        for plr in pairs(vis) do
+            if not plr.Parent then clearVis(plr) end
+        end
+    end)--// ส่วน 8/8 : ปืนที่ตก + ลูปหลัก + ปิดทั้งหมด
+    local lastGunScan = 0
+
+    local function isDrop(inst)
+        local n = inst.Name:lower()
+        if (n:find("gundrop") or n:find("droppedgun")) and (inst:IsA("BasePart") or inst:IsA("Model")) then
+            return true
+        end
+        if inst:IsA("Tool") and hasTag(inst, "Weapon_Gun") and not Players:GetPlayerFromCharacter(inst.Parent) then
+            return true
+        end
+        return false
+    end
+
+    local function adorneePart(inst)
+        if inst:IsA("BasePart") then return inst end
+        return inst:FindFirstChildWhichIsA("BasePart", true)
+    end
+
+    local function pretty(s)
+        return (tostring(s):gsub("(%l)(%u)", "%1 %2"))
+    end
+
+    local function gunName()
+        for _, d in pairs(playerData) do
+            if type(d) == "table" and roleFromText(d.Role) == "Sheriff" and d.Gun then
+                return pretty(d.Gun)
+            end
+        end
+        for _, d in pairs(playerData) do
+            if type(d) == "table" and d.Gun then return pretty(d.Gun) end
+        end
+        return nil
+    end
+
+    local function clearGun(inst)
+        local e = gEsp[inst]
+        if e then
+            pcall(function() e.hl:Destroy() end)
+            pcall(function() e.gui:Destroy() end)
+            gEsp[inst] = nil
+        end
+    end
+
+    local function updateGuns()
+        local name = gunName() or "Gun"
+        for inst in pairs(known) do
+            local gone = not inst:IsDescendantOf(workspace)
+                or (inst:IsA("Tool") and Players:GetPlayerFromCharacter(inst.Parent) ~= nil)
+            if gone then
+                clearGun(inst)
+                known[inst] = nil
+            else
+                local part = adorneePart(inst)
+                if part then
+                    local e = gEsp[inst]
+                    if e and (not e.hl.Parent or not e.gui.Parent) then
+                        clearGun(inst)
+                        e = nil
+                    end
+                    if not e then
+                        local hl = makeHL(inst, GUN_COL, 0.3)
+                        local g, l = makeTag(part, part, 170, 40, Vector3.new(0, 2, 0))
+                        l.TextColor3 = GUN_COL
+                        l.TextSize = 15
+                        e = { hl = hl, gui = g, label = l }
+                        gEsp[inst] = e
+                    end
+                    e.label.Text = "🔫 " .. name .. "\n[" .. distTo(part.Position) .. "m]"
+                end
+            end
+        end
+    end
+
+    local function clearAllGuns()
+        for inst in pairs(gEsp) do clearGun(inst) end
+    end
+
+    workspace.DescendantAdded:Connect(function(d)
+        if isDrop(d) then known[d] = true end
+    end)
+
+    local function scanDrops()
+        local d = workspace:FindFirstChild("GunDrop", true)
+        if d and isDrop(d) then known[d] = true end
+    end
+
+    function NX.gunPart()
+        for inst in pairs(known) do
+            local gone = not inst:IsDescendantOf(workspace)
+                or (inst:IsA("Tool") and Players:GetPlayerFromCharacter(inst.Parent) ~= nil)
+            if gone then
+                known[inst] = nil
+            else
+                local p = adorneePart(inst)
+                if p then return p end
+            end
+        end
+        if os.clock() - lastGunScan > 2 then
+            lastGunScan = os.clock()
+            scanDrops()
+        end
+        return nil
+    end
+
+    local function count(t)
+        local n = 0
+        for _ in pairs(t) do n += 1 end
+        return n
+    end
+
+    task.spawn(function()
+        local gunWas, lastScan = false, 0
+        while gui.Parent do
+            task.wait(0.2)
+            local ok, err = pcall(function()
+                if ESP.roles or ESP.lines or ESP.boxes then
+                    for _, plr in ipairs(Players:GetPlayers()) do
+                        if plr ~= player then roleCache[plr] = getRole(plr) end
+                    end
+                end
+                for plr in pairs(roleCache) do
+                    if not plr.Parent then roleCache[plr] = nil end
+                end
+
+                if ESP.roles then
+                    for _, plr in ipairs(Players:GetPlayers()) do
+                        if plr ~= player then
+                            local role = roleCache[plr]
+                            if role then applyPlayer(plr, role) else clearPlayer(plr) end
+                        end
+                    end
+                    for plr in pairs(pEsp) do
+                        if not plr.Parent then clearPlayer(plr) end
+                    end
+                else
+                    clearAllPlayers()
+                end
+
+                if ESP.gun then
+                    if not gunWas or os.clock() - lastScan > 3 then
+                        scanDrops()
+                        lastScan = os.clock()
+                    end
+                    updateGuns()
+                else
+                    clearAllGuns()
+                end
+                gunWas = ESP.gun
+
+                statusLabel.Visible = ESP.roles or ESP.gun
+                statusLabel.Text = string.format(
+                    "ESP | เห็น %d คน | ข้อมูลบทบาท %d | ปืนตก %d | แหล่งข้อมูล: %s%s",
+                    count(pEsp), count(playerData), count(gEsp), dataSource,
+                    lastErr and ("\nERROR: " .. tostring(lastErr)) or ""
+                )
+            end)
+            if not ok then
+                lastErr = err
+                warn("[NXESP]", err)
+            else
+                lastErr = nil
+            end
+        end
+    end)
+
+    NX.toast("welcome")
+end
+
+print("NEXORA MM2 V7 loaded")
+
+end)
+
+if not NX_OK then
+    warn("NEXORA ERROR: " .. tostring(NX_ERR))
+    pcall(function()
+        local pg = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+        local g = Instance.new("ScreenGui")
+        g.Name = "NEXORA_ERR"
+        g.ResetOnSpawn = false
+        g.DisplayOrder = 1000
+        g.Parent = pg
+        local l = Instance.new("TextLabel")
+        l.Size = UDim2.new(1, -20, 0, 90)
+        l.Position = UDim2.new(0, 10, 0, 10)
+        l.BackgroundColor3 = Color3.fromRGB(70, 0, 0)
+        l.TextColor3 = Color3.new(1, 1, 1)
+        l.Font = Enum.Font.GothamBold
+        l.TextSize = 13
+        l.TextWrapped = true
+        l.Text = "NEXORA ERROR: " .. tostring(NX_ERR)
+        l.Parent = g
+    end)
+end
